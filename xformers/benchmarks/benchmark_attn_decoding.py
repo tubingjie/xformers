@@ -322,21 +322,27 @@ except ImportError:
     pass
 
 
+# TEST_CASES = [
+#     dict(
+#         B=max(1, 2 ** (16 - i)),
+#         Mq=1,
+#         Mkv=2**i,
+#         Hq=16,
+#         Hkv=hkv,
+#         K=128,
+#         attn_bias_type=None,
+#     )
+#     for i in range(8, 18)
+#     for hkv in range(1, 3)
+# ] + [
+#     dict(B=i, Mq=1, Mkv=4097, Hq=8, Hkv=1, K=128, attn_bias_type=None)
+#     for i in [2, 4, 8, 16, 32, 64, 128]
+# ]
+
 TEST_CASES = [
-    dict(
-        B=max(1, 2 ** (16 - i)),
-        Mq=1,
-        Mkv=2**i,
-        Hq=16,
-        Hkv=hkv,
-        K=128,
-        attn_bias_type=None,
-    )
-    for i in range(8, 18)
-    for hkv in range(1, 3)
-] + [
-    dict(B=i, Mq=1, Mkv=4097, Hq=8, Hkv=1, K=128, attn_bias_type=None)
-    for i in [2, 4, 8, 16, 32, 64, 128]
+    dict(B=1, Mq=1, Mkv=mkv, Hq=32, Hkv=32, K=128, attn_bias_type=None)
+    # for i in [2, 4, 8, 16, 32, 64, 128]
+    for mkv in [64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
 ]
 
 
@@ -395,7 +401,8 @@ def main() -> None:
     benchmark_main_helper2(
         "attn_decoding",
         fw=True,
-        cases=CASES,
+        # cases=CASES,
+        cases=TEST_CASES,
         functions=BENCHMARKS,
         min_run_time=min_run_time,
     )
