@@ -60,3 +60,5 @@ outputs
 xformers/_flash_attn
 xformers/version.py
 xformers/cpp_lib.json
+
+*_ori.py
