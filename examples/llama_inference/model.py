@@ -138,9 +138,17 @@ class Attention(nn.Module):
 
         # rope_padded() updated the caches, so we
         # call attention directly
-        output = fmha.memory_efficient_attention_forward(
-            xq, cache_k, cache_v, attn_bias
-        )
+        # output = fmha.memory_efficient_attention_forward(
+        #     xq, cache_k, cache_v, attn_bias, op=fmha.cutlass.FwOp
+        # )
+        if (attn_bias.q_seqinfo.max_seqlen > 1):
+            output = fmha.memory_efficient_attention_forward(
+                query=xq, key=cache_k, value=cache_v, attn_bias=attn_bias, op=fmha.flash.FwOp
+            )
+        else:
+            output = fmha.memory_efficient_attention_forward(
+                query=xq, key=cache_k, value=cache_v, attn_bias=attn_bias, op=fmha.triton_splitk.FwOp
+            )
 
         output = self.wo(output.reshape(output_shape))
         mp_utils.all_reduce(output)
