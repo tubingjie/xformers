@@ -4,9 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.28.post3] - TBD
+## [0.0.31] - 2025-??-??
+
+## [0.0.30] - 2025-04-28
+Pre-built binary wheels are available for PyTorch 2.7.0. Following PyTorch, we build wheels for CUDA 11.8, 12.6, and 12.8 only (we no longer build for CUDA 12.4).
+xFormers now requires PyTorch >= 2.7
+### Added
+- [fMHA] Added support for local attention on the Flash3 backend (H100)
+- [fMHA] Added a new paged gappy attention bias
+### Improved
+- [fMHA] The FlashAttention3 backend now ships with more head dimensions to support MLA, and with a FLOPs formula in order to be compatible with PyTorch's partitioner-base automatic activation checkpointing
+- The fused operators for sequence parallelism were migrated to PyTorch's SymmetricMemory
+- The profiler prepends the traces' filenames with the rank of the process when doing distributed training
+### Removed
+- Removed documentation for legacy unmaintained components
+
+## [0.0.29.post2] - 2025-01-31
+Pre-built binary wheels are available for PyTorch 2.6.0. Following PyTorch, we build wheels for CUDA 11.8, 12.4, and 12.6 only (we no longer build for CUDA 12.1).
+xFormers now requires PyTorch >= 2.6
+
+
+## [0.0.29] - 2024-12-27
+### Improved:
+- [fMHA] Creating a `LowerTriangularMask` no longer creates a CUDA tensor
+- [fMHA] Updated Flash-Attention to `v2.7.2.post1`
+- [fMHA] Flash-Attention v3 will now be used by `memory_efficient_attention` by default when available, unless the operator is enforced with the `op` keyword-argument. Switching from Flash2 to Flash3 can make transformer trainings ~10% faster end-to-end on H100s
+- [fMHA] Fixed a performance regression with the `cutlass` backend for the backward pass (facebookresearch/xformers#1176) - mostly used on older GPUs (eg V100)
+- Fixed swiglu operator compatibility with torch-compile with PyTorch 2.6
+- Fix activation checkpointing of SwiGLU when AMP is enabled (facebookresearch/xformers#1152)
 ### Removed:
 - Following PyTorch, xFormers no longer builds binaries for conda. Pip is now the only recommended way to get xFormers
+- Removed unmaintained/deprecated components in `xformers.components.*` (see facebookresearch/xformers#848)
 
 ## [0.0.28.post3] - 2024-10-30
 Pre-built binary wheels require PyTorch 2.5.1
