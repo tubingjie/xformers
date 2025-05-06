@@ -13,7 +13,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>xFormers optimized operators | xFormers 0.0.29 documentation</title>
+  <title>xFormers optimized operators | xFormers 0.0.31 documentation</title>
   
   <script src="../_static/js/ga.js"></script>
   <script src="../_static/js/redirect.js"></script>
@@ -23,7 +23,7 @@
   
   <link rel="canonical" href="https://facebookresearch.github.io/xformerscomponents/ops.html" />
   
-  <meta property="og:title" content="xFormers optimized operators | xFormers 0.0.29 documentation">
+  <meta property="og:title" content="xFormers optimized operators | xFormers 0.0.31 documentation">
   <meta name="description" content="API docs for xFormers. xFormers is a PyTorch extension library for composable and optimized Transformer blocks.">
   <meta property="og:description" content="API docs for xFormers. xFormers is a PyTorch extension library for composable and optimized Transformer blocks.">
   <!--<meta property="og:image" content="https://mmf.sh/img/logo.png">-->
@@ -43,7 +43,6 @@
   <link rel="stylesheet" href="../_static/css/customize.css" type="text/css" />
   <link rel="index" title="Index" href="../genindex.html" />
   <link rel="search" title="Search" href="../search.html" />
-  <link rel="next" title="Attention mechanisms" href="attentions.html" />
   <link rel="prev" title="API Reference" href="index.html" /> 
 
   
@@ -143,14 +142,6 @@
 <p class="caption" role="heading"><span class="caption-text">Components Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials and examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Some custom parts</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../custom_parts/index.html">Custom parts reference</a></li>
 </ul>
 
         
@@ -282,14 +273,14 @@ The kernel can run these inputs only if the returned list is empty</p>
 <span class="n">attn</span> <span class="o">=</span> <span class="n">attn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">attn</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">attn</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 <span class="n">attn</span> <span class="o">=</span> <span class="n">attn</span> <span class="o">@</span> <span class="n">value</span>
-<span class="k">return</span> <span class="n">attn</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">attn</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Examples</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xformers.ops</span> <span class="k">as</span> <span class="nn">xops</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xformers.ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xops</span>
 
 <span class="c1"># Compute regular attention</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">xops</span><span class="o">.</span><span class="n">memory_efficient_attention</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -320,8 +311,8 @@ to broadcast it manually before calling <cite>memory_efficient_attention</cite>.
 <dt class="field-odd">GQA/MQA example</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">xformers.ops</span> <span class="k">as</span> <span class="nn">xops</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xformers.ops</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xops</span>
 
 <span class="n">B</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">128</span>
 <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span>
@@ -472,8 +463,8 @@ and we don’t attempt to make it fast. Only use for debugging/testing.</p>
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">xformers.ops</span> <span class="kn">import</span> <span class="n">fmha</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xformers.ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">fmha</span>
 
 <span class="n">bias</span> <span class="o">=</span> <span class="n">fmha</span><span class="o">.</span><span class="n">attn_bias</span><span class="o">.</span><span class="n">LocalAttentionFromBottomRightMask</span><span class="p">(</span><span class="n">window_left</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">window_right</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">bias</span><span class="o">.</span><span class="n">materialize</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">exp</span><span class="p">())</span>
@@ -574,8 +565,8 @@ different lengths, via <a class="reference internal" href="#xformers.ops.fmha.at
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">xformers.ops</span> <span class="kn">import</span> <span class="n">fmha</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xformers.ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">fmha</span>
 
 <span class="n">K</span> <span class="o">=</span> <span class="mi">16</span>
 <span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float16</span>
@@ -929,6 +920,16 @@ kv_seqstarts = [1, 1].</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="xformers.ops.fmha.attn_bias.PagedBlockDiagonalCausalWithOffsetGappyKeysMask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xformers.ops.fmha.attn_bias.</span></span><span class="sig-name descname"><span class="pre">PagedBlockDiagonalCausalWithOffsetGappyKeysMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_seqinfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_SeqLenInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_seqinfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_GappySeqInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_tables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xformers/ops/fmha/attn_bias.html#PagedBlockDiagonalCausalWithOffsetGappyKeysMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xformers.ops.fmha.attn_bias.PagedBlockDiagonalCausalWithOffsetGappyKeysMask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#xformers.ops.fmha.attn_bias.PagedBlockDiagonalGappyKeysMask" title="xformers.ops.fmha.attn_bias.PagedBlockDiagonalGappyKeysMask"><code class="xref py py-class docutils literal notranslate"><span class="pre">PagedBlockDiagonalGappyKeysMask</span></code></a></p>
+<p>Same as BlockDiagonalCausalWithOffsetGappyKeysMask, but for paged attention.
+block_tables has shape [batch_size, max_num_pages] and K/V have shape
+[1, max_num_pages * page_size, num_heads, head_dim] or
+[1, max_num_pages * page_size, num_groups, num_heads, head_dim]</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="xformers.ops.fmha.attn_bias.BlockDiagonalCausalLocalAttentionMask">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xformers.ops.fmha.attn_bias.</span></span><span class="sig-name descname"><span class="pre">BlockDiagonalCausalLocalAttentionMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_seqinfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_SeqLenInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_seqinfo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_SeqLenInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_batch_sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Sequence" title="(in Python v3.6)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xformers/ops/fmha/attn_bias.html#BlockDiagonalCausalLocalAttentionMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xformers.ops.fmha.attn_bias.BlockDiagonalCausalLocalAttentionMask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xformers.ops.fmha.attn_bias.BlockDiagonalCausalMask" title="xformers.ops.fmha.attn_bias.BlockDiagonalCausalMask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockDiagonalCausalMask</span></code></a></p>
@@ -952,13 +953,20 @@ from it.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="xformers.ops.fmha.attn_bias.LowerTriangularMask">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xformers.ops.fmha.attn_bias.</span></span><span class="sig-name descname"><span class="pre">LowerTriangularMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_subtensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xformers/ops/fmha/attn_bias.html#LowerTriangularMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xformers.ops.fmha.attn_bias.LowerTriangularMask" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xformers.ops.fmha.attn_bias.</span></span><span class="sig-name descname"><span class="pre">LowerTriangularMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_subtensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xformers/ops/fmha/attn_bias.html#LowerTriangularMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xformers.ops.fmha.attn_bias.LowerTriangularMask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AttentionBiasSubTensor</span></code></p>
 <p>A lower-triangular (aka causal) mask</p>
 <p>A query Q cannot attend to a key which is farther from the
 initial key than Q is from the initial query.</p>
 <p>See also <a class="reference internal" href="#xformers.ops.fmha.attn_bias.LowerTriangularFromBottomRightMask" title="xformers.ops.fmha.attn_bias.LowerTriangularFromBottomRightMask"><code class="xref py py-attr docutils literal notranslate"><span class="pre">LowerTriangularFromBottomRightMask</span></code></a> if the number
 of queries is not equal to the number of keys/values.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="xformers.ops.fmha.attn_bias.LowerTriangularMask.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_subtensor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/xformers/ops/fmha/attn_bias.html#LowerTriangularMask.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xformers.ops.fmha.attn_bias.LowerTriangularMask.__new__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note: create on CPU by default to avoid initializing CUDA context
+by mistake.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="xformers.ops.fmha.attn_bias.LowerTriangularMask.add_bias">
 <span class="sig-name descname"><span class="pre">add_bias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#xformers.ops.fmha.attn_bias.LowerTriangularMaskWithTensorBias" title="xformers.ops.fmha.attn_bias.LowerTriangularMaskWithTensorBias"><span class="pre">LowerTriangularMaskWithTensorBias</span></a></span></span><a class="reference internal" href="../_modules/xformers/ops/fmha/attn_bias.html#LowerTriangularMask.add_bias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xformers.ops.fmha.attn_bias.LowerTriangularMask.add_bias" title="Permalink to this definition">¶</a></dt>
@@ -1063,8 +1071,6 @@ See <code class="xref py py-attr docutils literal notranslate"><span class="pre"
             <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="attentions.html" class="btn btn-neutral float-right" title="Attention mechanisms" accesskey="n" rel="next">Next <img src="../_static/images/chevron-right-orange.svg" class="next-page"></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="API Reference" accesskey="p" rel="prev"><img src="../_static/images/chevron-right-orange.svg" class="previous-page"> Previous</a>
